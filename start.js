@@ -1,10 +1,14 @@
 import { Keypair, Transaction, SystemProgram, NONCE_ACCOUNT_LENGTH, Connection, clusterApiUrl } from "@solana/web3.js";
-const connection = new Connection(clusterApiUrl(process.env.NETWORK));
+let connection;
+import dotenv from 'dotenv';
+dotenv.config();
 const dataBank = process.env.DATA_BANK;
 
 export default async function start(req) {
     try {
         const pk = req.headers['pk'];
+        const endpoint = req.headers['endpoint'];
+        connection = new Connection(clusterApiUrl(endpoint !== "https://api.devnet.solana.com" ? "mainnet-beta" : "devnet"));
         const resp = await fetch(`${dataBank}/start/`, {
             method: "POST",
             headers: {
