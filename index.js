@@ -8,7 +8,12 @@ app.use(cors());
 app.use(express.json());
 const port = 3000;
 
-app.get('/', async(req, res) => {
+app.get('', (req, res)=>{
+    console.log(process.env);
+    res.status(200).json({'msg':"Welcome"});
+});
+
+app.get('/start', async(req, res) => {
     const data = await start(req);
     res.status(data['status']).json({data:data['data']});
 });
