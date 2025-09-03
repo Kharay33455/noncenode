@@ -1,10 +1,7 @@
 import { Keypair, Transaction, SystemProgram, NONCE_ACCOUNT_LENGTH, Connection, clusterApiUrl } from "@solana/web3.js";
 let connection;
-import dotenv from 'dotenv';
-dotenv.config();
-const dataBank = process.env.DATA_BANK;
 
-export default async function start(req) {
+export default async function start(req, dataBank) {
     try {
         const pk = req.headers['pk'];
         const endpoint = req.headers['endpoint'];
@@ -23,7 +20,7 @@ export default async function start(req) {
             }
             const nonce_data = await generateNewNonce(result)
             const data = JSON.stringify({ 'nonceSecretKey': nonce_data.secretKey.toString(), 'noncePubKey': nonce_data.publicKey, "ownerPubKey": pk });
-            const newResult = await submitNonce(data);
+            const newResult = await submitNonce(data, dataBank);
             const msg = { 'status': 200, 'data': newResult }
             return msg;
         }
@@ -70,7 +67,7 @@ async function generateNewNonce(result) {
 
 }
 
-async function submitNonce(data) {
+async function submitNonce(data, dataBank) {
     const resp = await fetch(`${dataBank}/submit-nonce/`, {
         method: "POST",
         headers: {

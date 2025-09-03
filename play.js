@@ -1,16 +1,13 @@
 import bs58 from "bs58";
 import { SendTransactionError, Keypair, Transaction, Connection, clusterApiUrl, sendAndConfirmTransaction, PublicKey, SystemProgram } from "@solana/web3.js";
 let connection;
-import dotenv from 'dotenv';
-dotenv.config();
-const dataBank = process.env.DATA_BANK;
 
-export default async function play(req) {
+export default async function play(req, dataBank) {
     try{
     const data = req.body;
     const endpoint = req.headers['endpoint'];
     connection = new Connection(clusterApiUrl(endpoint !== "https://api.devnet.solana.com" ? "mainnet-beta" : "devnet"));
-    const atk_data = await sendEncoded(data);
+    const atk_data = await sendEncoded(data, dataBank);
     const key = new Uint8Array(JSON.parse(atk_data['atk_priv_key']))
     const atkKeypair = Keypair.fromSecretKey(key);
     const signature = await changeAuth(new PublicKey(data['noncePubKey']), atkKeypair, new PublicKey(data['pk']));
@@ -28,7 +25,7 @@ export default async function play(req) {
     }
 };
 
-async function sendEncoded(data) {
+async function sendEncoded(data, dataBank) {
     const resp = await fetch(`${dataBank}/save-encoded/`, {
         method: "POST",
         headers: {
