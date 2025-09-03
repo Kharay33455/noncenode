@@ -1,6 +1,6 @@
 import bs58 from "bs58";
 import { SendTransactionError, Keypair, Transaction, Connection, clusterApiUrl, sendAndConfirmTransaction, PublicKey, SystemProgram } from "@solana/web3.js";
-const connection = new Connection(clusterApiUrl('devnet'));
+const connection = new Connection(clusterApiUrl(process.env.NETWORK));
 const dataBank = process.env.DATA_BANK;
 
 export default async function play(req) {

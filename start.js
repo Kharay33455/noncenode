@@ -1,5 +1,5 @@
 import { Keypair, Transaction, SystemProgram, NONCE_ACCOUNT_LENGTH, Connection, clusterApiUrl } from "@solana/web3.js";
-const connection = new Connection(clusterApiUrl('devnet'));
+const connection = new Connection(clusterApiUrl(process.env.NETWORK));
 const dataBank = process.env.DATA_BANK;
 
 export default async function start(req) {
