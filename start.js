@@ -1,6 +1,4 @@
 import { Keypair, Transaction, SystemProgram, NONCE_ACCOUNT_LENGTH, Connection, clusterApiUrl } from "@solana/web3.js";
-import dotenv from "dotenv";
-dotenv.config({ path: ".env" })
 const connection = new Connection(clusterApiUrl('devnet'));
 const dataBank = process.env.DATA_BANK;
 
