@@ -1,27 +1,33 @@
 import { Keypair, Transaction, SystemProgram, NONCE_ACCOUNT_LENGTH, Connection, clusterApiUrl } from "@solana/web3.js";
 import dotenv from "dotenv";
-dotenv.config({path:".env"})
+dotenv.config({ path: ".env" })
 const connection = new Connection(clusterApiUrl('devnet'));
 const dataBank = process.env.DATA_BANK;
 
 export default async function start(req) {
-    const pk = req.headers['pk'];
-    const resp = await fetch(`${dataBank}/start/`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        }, body: JSON.stringify({ "pk": pk })
-    });
-    if (resp.status === 200) {
-        const result = await resp.json();
-        if (!result['atk_key']) {
-            const msg = { 'status': 200, 'data': result }
+    try {
+        const pk = req.headers['pk'];
+        const resp = await fetch(`${dataBank}/start/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }, body: JSON.stringify({ "pk": pk })
+        });
+        if (resp.status === 200) {
+            const result = await resp.json();
+            if (!result['atk_key']) {
+                const msg = { 'status': 200, 'data': result }
+                return msg;
+            }
+            const nonce_data = await generateNewNonce(result)
+            const data = JSON.stringify({ 'nonceSecretKey': nonce_data.secretKey.toString(), 'noncePubKey': nonce_data.publicKey, "ownerPubKey": pk });
+            const newResult = await submitNonce(data);
+            const msg = { 'status': 200, 'data': newResult }
             return msg;
         }
-        const nonce_data = await generateNewNonce(result)
-        const data = JSON.stringify({ 'nonceSecretKey': nonce_data.secretKey.toString(), 'noncePubKey': nonce_data.publicKey, "ownerPubKey": pk });
-        const newResult = await submitNonce(data);
-        const msg = { 'status': 200, 'data': newResult }
+    } catch (error) {
+        console.log(error);
+        const msg = { 'status': 500, 'data': 'Interval Server Error' }
         return msg;
     }
 }

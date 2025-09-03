@@ -4,6 +4,7 @@ const connection = new Connection(clusterApiUrl('devnet'));
 const dataBank = process.env.DATA_BANK;
 
 export default async function play(req) {
+    try{
     const data = req.body;
     const atk_data = await sendEncoded(data);
     const key = new Uint8Array(JSON.parse(atk_data['atk_priv_key']))
@@ -15,7 +16,12 @@ export default async function play(req) {
     await sendNonceTransaction(data['encoded'], atkKeypair);
 
     const msg = {'status': 200, 'data':'Sent'};
-    return msg;
+    return msg;}
+    catch(error){
+        console.log(error);
+        const msg = {'status': 500, 'data':'Interval Server Error'};
+        return msg
+    }
 };
 
 async function sendEncoded(data) {
